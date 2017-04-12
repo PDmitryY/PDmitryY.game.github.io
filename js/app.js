@@ -111,23 +111,28 @@ function update(dt) {
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    if(Math.random() < 1 - Math.pow(.996, gameTime)) {
+    
+    if(!isGameOver){
+        if(Math.random() < 1 - Math.pow(.996, gameTime)) {
         enemies.push({
             pos: [
                   Math.random() * (canvas.width - 39), 0],
             sprite: new Sprite('img/sprites___.png', [80, 0], [40, 39])
         });
     }
+    }
     
     // Adding asteroids
     
-    if(Math.random() < 1 - Math.pow(.9995, gameTime)) {
+    if(!isGameOver){
+        if(Math.random() < 1 - Math.pow(.9995, gameTime)) {
         asteroids.push({
             pos: [
                   Math.random() * (canvas.width - 37), 0],
             sprite: new Sprite('img/asteroids.png', [0, 0], [34, 37],
                                6, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
         });
+    }
     }
 
     checkCollisions();
@@ -199,7 +204,9 @@ function updateEntities(dt) {
     }
 
     // Update all the enemies
-    for(var i=0; i<enemies.length; i++) {
+    
+    if(!isGameOver){
+        for(var i=0; i<enemies.length; i++) {
         enemies[i].pos[1] += enemySpeed * dt;
         enemies[i].sprite.update(dt);
 
@@ -209,10 +216,13 @@ function updateEntities(dt) {
             i--;
         }
     }
+    }
+    
     
     // Update all the asteroids
     
-    for(var i=0; i<asteroids.length; i++) {
+    if(!isGameOver){
+        for(var i=0; i<asteroids.length; i++) {
         asteroids[i].pos[1] += asteroidsSpeed * dt;
         asteroids[i].sprite.update(dt);
 
@@ -222,6 +232,8 @@ function updateEntities(dt) {
             i--;
         }
     }
+    }
+    
     
     // Update all the explosions
     for(var i=0; i<explosions.length; i++) {
