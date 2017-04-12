@@ -124,8 +124,8 @@ function update(dt) {
     if(Math.random() < 1 - Math.pow(.9995, gameTime)) {
         asteroids.push({
             pos: [
-                  Math.random() * (canvas.width - 64), 0],
-            sprite: new Sprite('img/asteroids.png', [0, 0], [64, 64],
+                  Math.random() * (canvas.width - 37), 0],
+            sprite: new Sprite('img/asteroids.png', [0, 0], [34, 37],
                                6, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
         });
     }
@@ -432,5 +432,5 @@ function reset() {
     
     //stopPlaySound(gameOverSound);
 
-    player.pos = [50, canvas.height / 2];
+    player.pos = [190, 500];
 };
