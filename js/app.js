@@ -56,13 +56,13 @@ function init() {
 
     document.getElementById('play-again').addEventListener('click', function() {
         reset();
-        backgroundSound = playSound('sounds/S31-200% Production.ogg');
+        backgroundSound = playSound('sounds/backgroundSound.ogg');
     });
 
     reset();
     lastTime = Date.now();
     main();
-    backgroundSound = playSound('sounds/S31-200% Production.ogg');
+    backgroundSound = playSound('sounds/backgroundSound.ogg');
 }
 
 resources.load([
@@ -93,6 +93,8 @@ let hotSound;
 let explosionSound;
 let gameOverSound;
 
+let inPause = false;
+
 var score = 0;
 var scoreEl = document.getElementById('score');
 
@@ -112,7 +114,7 @@ function update(dt) {
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
     
-    if(!isGameOver){
+    if(!isGameOver && !inPause){
         if(Math.random() < 1 - Math.pow(.996, gameTime)) {
         enemies.push({
             pos: [
@@ -124,7 +126,7 @@ function update(dt) {
     
     // Adding asteroids
     
-    if(!isGameOver){
+    if(!isGameOver && !inPause){
         if(Math.random() < 1 - Math.pow(.9995, gameTime)) {
         asteroids.push({
             pos: [
@@ -158,7 +160,7 @@ function handleInput(dt) {
     }
 
     if(input.isDown('SPACE') &&
-       !isGameOver &&
+       !isGameOver && !inPause &&
        Date.now() - lastFire > 100) {
         var x = player.pos[0] + player.sprite.size[0] / 2;
         var y = player.pos[1] + player.sprite.size[1] / 2;
@@ -205,7 +207,7 @@ function updateEntities(dt) {
 
     // Update all the enemies
     
-    if(!isGameOver){
+    if(!isGameOver && !inPause){
         for(var i=0; i<enemies.length; i++) {
         enemies[i].pos[1] += enemySpeed * dt;
         enemies[i].sprite.update(dt);
@@ -221,7 +223,7 @@ function updateEntities(dt) {
     
     // Update all the asteroids
     
-    if(!isGameOver){
+    if(!isGameOver && !inPause){
         for(var i=0; i<asteroids.length; i++) {
         asteroids[i].pos[1] += asteroidsSpeed * dt;
         asteroids[i].sprite.update(dt);
