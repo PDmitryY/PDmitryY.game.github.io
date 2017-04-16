@@ -16,12 +16,44 @@ canvas {
 }
 
 .wrapper {
-    width: 760px;
+    width: 800px;
     margin: 0 auto;
     margin-top: 2em;
 }
 
+
+#lifes{
+    float: left;
+    font-family: sans-serif;
+    color: #ffffff;
+}
+
+.lifes{
+    height: 50px;
+    display: inline-block;
+}
+
+#life1{
+    left: 0;
+    width: 52px;
+    background: url('../img/sprites___.png') -132px 0;
+}
+
+#life2{
+    left: 50px;
+    width: 52px;
+    background: url('../img/sprites___.png') -132px 0;
+}
+
+#life3{
+    left: 100px;
+    width: 52px;
+    background: url('../img/sprites___.png') -132px 0;
+}
+
 #instructions {
+    position: absolute;
+    top: 70%;
     float: left;
     font-family: sans-serif;
     color: #757575;
@@ -43,9 +75,9 @@ canvas {
     color: #aaffdd;
 }
 
-#game-over, #game-over-overlay {
+#game-over, #game-over-overlay, #pause {
     margin: auto;
-    width: 760px;
+    width: 800px;
     height: 580px;
     position: absolute;
     top: 0;
@@ -61,13 +93,13 @@ canvas {
     opacity: .5;
 }
 
-#game-over {
+#game-over, #pause {
     height: 200px;
     text-align: center;
     color: white;
 }
 
-#game-over h1 {
+#game-over h1, #pause h2 {
     font-size: 3em;
     font-family: sans-serif;
 }

@@ -46,23 +46,36 @@ function main() {
 
     update(dt);
     render();
-
+    
+    if(lifes == 3){
+        document.getElementById("life1").style.background = "url('img/sprites___.png') -132px 0";
+        document.getElementById("life2").style.background = "url('img/sprites___.png') -132px 0";
+        document.getElementById("life3").style.background = "url('img/sprites___.png') -132px 0";
+    }
+    
+    if(lifes == 2){
+        document.getElementById("life3").style.background = "url('img/sprites___.png') -187px 0"   
+    }
+    
+    if(lifes == 1){
+        document.getElementById("life2").style.background = "url('img/sprites___.png') -187px 0"
+    }
+    
     lastTime = now;
     requestAnimFrame(main);
 };
 
 function init() {
     spacePattern = ctx.createPattern(resources.get('img/space.png'), 'repeat');
-
     document.getElementById('play-again').addEventListener('click', function() {
         reset();
-        backgroundSound = playSound('sounds/backgroundSound.ogg');
+        backgroundSound = playSound('sounds/backgroundSound.mp3');
     });
 
     reset();
     lastTime = Date.now();
     main();
-    backgroundSound = playSound('sounds/backgroundSound.ogg');
+    backgroundSound = playSound('sounds/backgroundSound.mp3');
 }
 
 resources.load([
@@ -83,6 +96,8 @@ var enemies = [];
 var asteroids = [];
 var explosions = [];
 
+let lifes=3;
+
 var lastFire = Date.now();
 var gameTime = 0;
 var isGameOver;
@@ -93,7 +108,7 @@ let hotSound;
 let explosionSound;
 let gameOverSound;
 
-let inPause = false;
+let inPause;
 
 var score = 0;
 var scoreEl = document.getElementById('score');
@@ -178,6 +193,12 @@ function handleInput(dt) {
                        sprite: new Sprite('img/sprites___.png', [3, 80], [7, 25]) });
 
         lastFire = Date.now();
+    }
+    
+    if((input.isDown('p') || input.isDown('P'))){
+        setTimeout(function(){
+            pause();
+        }, 1000);
     }
 }
 
@@ -269,8 +290,8 @@ function boxCollides(pos, size, pos2, size2) {
 
 function checkCollisions() {
     checkPlayerBounds();
-    
-    // Run collision detection for all enemies and bullets
+    if(!isGameOver){
+        // Run collision detection for all enemies and bullets
     for(var i=0; i<enemies.length; i++) {
         var pos = enemies[i].pos;
         var size = enemies[i].sprite.size;
@@ -374,7 +395,7 @@ function checkCollisions() {
             }
         }
     }
-    
+    }
 }
 
 function checkPlayerBounds() {
@@ -422,14 +443,35 @@ function renderEntity(entity) {
     entity.sprite.render(ctx);
     ctx.restore();
 }
-
 // Game over
 function gameOver() {
-    document.getElementById('game-over').style.display = 'block';
-    document.getElementById('game-over-overlay').style.display = 'block';
-    isGameOver = true;
-    stopPlaySound(backgroundSound);
-    //gameOverSound = playSound('sounds/At the starting line.mp3');
+    lifes -= 1;
+    enemies = [];
+    bullets = [];
+    asteroids = [];
+    if (lifes < 1) {
+        document.getElementById("life1").style.background = "url('img/sprites___.png') -187px 0"
+        document.getElementById('game-over').style.display = 'block';
+        document.getElementById('game-over-overlay').style.display = 'block';
+        isGameOver = true;
+        stopPlaySound(backgroundSound);
+        gameOverSound = playSound('sounds/gameOverSound.mp3');
+    }
+}
+
+//Pause
+
+function pause(){
+    console.log(inPause);
+    if(!inPause){
+        inPause = true;
+        document.getElementById('pause').style.display = 'block';
+        return;
+    }
+    if(inPause) {
+        inPause = false;
+        document.getElementById('pause').style.display = 'none';
+    }
 }
 
 // Reset game to original state
@@ -444,7 +486,10 @@ function reset() {
     bullets = [];
     asteroids = [];
     
-    //stopPlaySound(gameOverSound);
+    lifes = 3;
+    inPause = false;
+    
+    stopPlaySound(gameOverSound);
 
     player.pos = [190, 500];
 };
