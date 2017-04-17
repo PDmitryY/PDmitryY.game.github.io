@@ -1,10 +1,10 @@
-var requestAnimFrame = (function(){
-    return window.requestAnimationFrame       ||
+var requestAnimFrame = (function () {
+    return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame    ||
-        window.oRequestAnimationFrame      ||
-        window.msRequestAnimationFrame     ||
-        function(callback){
+        window.mozRequestAnimationFrame ||
+        window.oRequestAnimationFrame ||
+        window.msRequestAnimationFrame ||
+        function (callback) {
             window.setTimeout(callback, 1000 / 60);
         };
 })();
@@ -19,7 +19,7 @@ document.body.appendChild(canvas);
 // Make music
 
 function playSound(src) {
-    if(src){
+    if (src) {
         var audio = new Audio();
         audio.src = src;
         audio.autoplay = true;
@@ -27,11 +27,11 @@ function playSound(src) {
     } else {
         return undefined;
     }
-    
+
 }
 
-function stopPlaySound(sound){
-    if(sound){
+function stopPlaySound(sound) {
+    if (sound) {
         sound.pause();
         sound.currentTime = 0;
     }
@@ -46,28 +46,28 @@ function main() {
 
     update(dt);
     render();
-    
-    if(lifes == 3){
+
+    if (lifes == 3) {
         document.getElementById("life1").style.background = "url('img/sprites___.png') -132px 0";
         document.getElementById("life2").style.background = "url('img/sprites___.png') -132px 0";
         document.getElementById("life3").style.background = "url('img/sprites___.png') -132px 0";
     }
-    
-    if(lifes == 2){
-        document.getElementById("life3").style.background = "url('img/sprites___.png') -187px 0"   
+
+    if (lifes == 2) {
+        document.getElementById("life3").style.background = "url('img/sprites___.png') -187px 0"
     }
-    
-    if(lifes == 1){
+
+    if (lifes == 1) {
         document.getElementById("life2").style.background = "url('img/sprites___.png') -187px 0"
     }
-    
+
     lastTime = now;
     requestAnimFrame(main);
 };
 
 function init() {
     spacePattern = ctx.createPattern(resources.get('img/space.png'), 'repeat');
-    document.getElementById('play-again').addEventListener('click', function() {
+    document.getElementById('play-again').addEventListener('click', function () {
         reset();
         backgroundSound = playSound('sounds/backgroundSound.mp3');
     });
@@ -78,12 +78,16 @@ function init() {
     backgroundSound = playSound('sounds/backgroundSound.mp3');
 }
 
-resources.load([
+let startButton = document.getElementById('start-button');
+startButton.addEventListener("click", function(){
+    document.getElementById('start').style.display = 'none';
+    resources.load([
     'img/sprites___.png',
     'img/space.png',
     'img/asteroids.png'
 ]);
-resources.onReady(init);
+    resources.onReady(init);
+})
 
 // Game state
 var player = {
@@ -96,7 +100,7 @@ var enemies = [];
 var asteroids = [];
 var explosions = [];
 
-let lifes=3;
+let lifes = 3;
 
 var lastFire = Date.now();
 var gameTime = 0;
@@ -128,28 +132,28 @@ function update(dt) {
 
     // It gets harder over time by adding enemies using this
     // equation: 1-.993^gameTime
-    
-    if(!isGameOver && !inPause){
-        if(Math.random() < 1 - Math.pow(.996, gameTime)) {
-        enemies.push({
-            pos: [
+
+    if (!isGameOver && !inPause) {
+        if (Math.random() < 1 - Math.pow(.996, gameTime)) {
+            enemies.push({
+                pos: [
                   Math.random() * (canvas.width - 39), 0],
-            sprite: new Sprite('img/sprites___.png', [80, 0], [40, 39])
-        });
+                sprite: new Sprite('img/sprites___.png', [80, 0], [40, 39])
+            });
+        }
     }
-    }
-    
+
     // Adding asteroids
-    
-    if(!isGameOver && !inPause){
-        if(Math.random() < 1 - Math.pow(.9995, gameTime)) {
-        asteroids.push({
-            pos: [
+
+    if (!isGameOver && !inPause) {
+        if (Math.random() < 1 - Math.pow(.9995, gameTime)) {
+            asteroids.push({
+                pos: [
                   Math.random() * (canvas.width - 37), 0],
-            sprite: new Sprite('img/asteroids.png', [0, 0], [34, 37],
-                               6, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
-        });
-    }
+                sprite: new Sprite('img/asteroids.png', [0, 0], [34, 37],
+                    6, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+            });
+        }
     }
 
     checkCollisions();
@@ -158,47 +162,47 @@ function update(dt) {
 };
 
 function handleInput(dt) {
-    if(input.isDown('DOWN') || input.isDown('s')) {
+    if (input.isDown('DOWN') || input.isDown('s')) {
         player.pos[1] += playerSpeed * dt;
     }
 
-    if(input.isDown('UP') || input.isDown('w')) {
+    if (input.isDown('UP') || input.isDown('w')) {
         player.pos[1] -= playerSpeed * dt;
     }
 
-    if(input.isDown('LEFT') || input.isDown('a')) {
+    if (input.isDown('LEFT') || input.isDown('a')) {
         player.pos[0] -= playerSpeed * dt;
     }
 
-    if(input.isDown('RIGHT') || input.isDown('d')) {
+    if (input.isDown('RIGHT') || input.isDown('d')) {
         player.pos[0] += playerSpeed * dt;
     }
 
-    if(input.isDown('SPACE') &&
-       !isGameOver && !inPause &&
-       Date.now() - lastFire > 100) {
+    if (input.isDown('SPACE') &&
+        !isGameOver && !inPause &&
+        Date.now() - lastFire > 100) {
         var x = player.pos[0] + player.sprite.size[0] / 2;
         var y = player.pos[1] + player.sprite.size[1] / 2;
-        
+
         hotSound = playSound('sounds/Shoot 3.wav')
 
-        bullets.push({ pos: [x, y],
-                       dir: 'up',
-                       sprite: new Sprite('img/sprites___.png', [13, 80], [13, 20]) });
-        bullets.push({ pos: [x, y],
-                       dir: 'forward',
-                       sprite: new Sprite('img/sprites___.png', [3, 80], [7, 25]) });
-        bullets.push({ pos: [x, y],
-                       dir: 'backward',
-                       sprite: new Sprite('img/sprites___.png', [3, 80], [7, 25]) });
+        bullets.push({
+            pos: [x, y],
+            dir: 'up',
+            sprite: new Sprite('img/sprites___.png', [13, 80], [13, 20])
+        });
+        bullets.push({
+            pos: [x, y],
+            dir: 'forward',
+            sprite: new Sprite('img/sprites___.png', [3, 80], [7, 25])
+        });
+        bullets.push({
+            pos: [x, y],
+            dir: 'backward',
+            sprite: new Sprite('img/sprites___.png', [3, 80], [7, 25])
+        });
 
         lastFire = Date.now();
-    }
-    
-    if((input.isDown('p') || input.isDown('P'))){
-        setTimeout(function(){
-            pause();
-        }, 1000);
     }
 }
 
@@ -207,63 +211,69 @@ function updateEntities(dt) {
     player.sprite.update(dt);
 
     // Update all the bullets
-    for(var i=0; i<bullets.length; i++) {
+    for (var i = 0; i < bullets.length; i++) {
         var bullet = bullets[i];
 
-        switch(bullet.dir) {
-        case 'up': bullet.pos[1] -= bulletSpeed * dt; break;
-        case 'down': bullet.pos[1] += bulletSpeed * dt; break;
-        case 'backward': bullet.pos[0] -= bulletSpeed * dt; break;
-        default:
-            bullet.pos[0] += bulletSpeed * dt;
+        switch (bullet.dir) {
+            case 'up':
+                bullet.pos[1] -= bulletSpeed * dt;
+                break;
+            case 'down':
+                bullet.pos[1] += bulletSpeed * dt;
+                break;
+            case 'backward':
+                bullet.pos[0] -= bulletSpeed * dt;
+                break;
+            default:
+                bullet.pos[0] += bulletSpeed * dt;
         }
 
         // Remove the bullet if it goes offscreen
-        if(bullet.pos[1] < 0 || bullet.pos[1] > canvas.height ||
-           bullet.pos[0] > canvas.width) {
+        if (bullet.pos[1] < 0 || bullet.pos[1] > canvas.height ||
+            bullet.pos[0] > canvas.width) {
             bullets.splice(i, 1);
             i--;
         }
     }
 
     // Update all the enemies
-    
-    if(!isGameOver && !inPause){
-        for(var i=0; i<enemies.length; i++) {
-        enemies[i].pos[1] += enemySpeed * dt;
-        enemies[i].sprite.update(dt);
 
-        // Remove if offscreen
-        if(enemies[i].pos[0] + enemies[i].sprite.size[0] < 0) {
-            enemies.splice(i, 1);
-            i--;
+    if (!isGameOver && !inPause) {
+        for (var i = 0; i < enemies.length; i++) {
+            enemies[i].pos[1] += enemySpeed * dt;
+            enemies[i].sprite.update(dt);
+
+            // Remove if offscreen
+            if (enemies[i].pos[0] + enemies[i].sprite.size[0] < 0) {
+                enemies.splice(i, 1);
+                i--;
+            }
         }
     }
-    }
-    
-    
+
+
     // Update all the asteroids
-    
-    if(!isGameOver && !inPause){
-        for(var i=0; i<asteroids.length; i++) {
-        asteroids[i].pos[1] += asteroidsSpeed * dt;
-        asteroids[i].sprite.update(dt);
 
-        // Remove if offscreen
-        if(asteroids[i].pos[0] + asteroids[i].sprite.size[0] < 0) {
-            asteroids.splice(i, 1);
-            i--;
+    if (!isGameOver && !inPause) {
+        for (var i = 0; i < asteroids.length; i++) {
+            asteroids[i].pos[1] += asteroidsSpeed * dt;
+            asteroids[i].sprite.update(dt);
+
+            // Remove if offscreen
+            if (asteroids[i].pos[0] + asteroids[i].sprite.size[0] < 0) {
+                asteroids.splice(i, 1);
+                i--;
+            }
         }
     }
-    }
-    
-    
+
+
     // Update all the explosions
-    for(var i=0; i<explosions.length; i++) {
+    for (var i = 0; i < explosions.length; i++) {
         explosions[i].sprite.update(dt);
 
         // Remove if animation is done
-        if(explosions[i].sprite.done) {
+        if (explosions[i].sprite.done) {
             explosions.splice(i, 1);
             i--;
         }
@@ -274,15 +284,15 @@ function updateEntities(dt) {
 
 function collides(x, y, r, b, x2, y2, r2, b2) {
     return !(r <= x2 || x > r2 ||
-             b <= y2 || y > b2);
+        b <= y2 || y > b2);
 }
 
 function boxCollides(pos, size, pos2, size2) {
-    if([pos, size, pos2, size2].every(Array.isArray)){
+    if ([pos, size, pos2, size2].every(Array.isArray)) {
         return collides(pos[0], pos[1],
-                    pos[0] + size[0], pos[1] + size[1],
-                    pos2[0], pos2[1],
-                    pos2[0] + size2[0], pos2[1] + size2[1]);
+            pos[0] + size[0], pos[1] + size[1],
+            pos2[0], pos2[1],
+            pos2[0] + size2[0], pos2[1] + size2[1]);
     } else {
         return false;
     }
@@ -290,127 +300,122 @@ function boxCollides(pos, size, pos2, size2) {
 
 function checkCollisions() {
     checkPlayerBounds();
-    if(!isGameOver){
+    if (!isGameOver) {
         // Run collision detection for all enemies and bullets
-    for(var i=0; i<enemies.length; i++) {
-        var pos = enemies[i].pos;
-        var size = enemies[i].sprite.size;
+        for (var i = 0; i < enemies.length; i++) {
+            var pos = enemies[i].pos;
+            var size = enemies[i].sprite.size;
 
-        for(var j=0; j<bullets.length; j++) {
-            var pos2 = bullets[j].pos;
-            var size2 = bullets[j].sprite.size;
+            for (var j = 0; j < bullets.length; j++) {
+                var pos2 = bullets[j].pos;
+                var size2 = bullets[j].sprite.size;
 
-            if(boxCollides(pos, size, pos2, size2)) {
-                // Remove the enemy
-                enemies.splice(i, 1);
-                i--;
+                if (boxCollides(pos, size, pos2, size2)) {
+                    // Remove the enemy
+                    enemies.splice(i, 1);
+                    i--;
 
-                // Add score
-                score += 100;
+                    // Add score
+                    score += 100;
 
-                // Add an explosion
-                explosions.push({
-                    pos: pos,
-                    sprite: new Sprite('img/sprites___.png',
-                                       [0, 117],
-                                       [39, 39],
-                                       16,
-                                       [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                                       null,
-                                       true)
-                });
-                
-                explosionSound = playSound('sounds/explosion.wav');
+                    // Add an explosion
+                    explosions.push({
+                        pos: pos,
+                        sprite: new Sprite('img/sprites___.png', [0, 117], [39, 39],
+                            16, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                            null,
+                            true)
+                    });
 
-                // Remove the bullet and stop this iteration
-                bullets.splice(j, 1);
-                break;
+                    explosionSound = playSound('sounds/explosion.wav');
+
+                    // Remove the bullet and stop this iteration
+                    bullets.splice(j, 1);
+                    break;
+                }
+            }
+
+            if (boxCollides(pos, size, player.pos, player.sprite.size)) {
+                gameOver();
             }
         }
 
-        if(boxCollides(pos, size, player.pos, player.sprite.size)) {
-            gameOver();
-        }
-    }
-    
-    // Run collision detection for all asteroids and bullets
-    
-    for(var i=0; i<asteroids.length; i++) {
-        var pos = asteroids[i].pos;
-        var size = asteroids[i].sprite.size;
+        // Run collision detection for all asteroids and bullets
 
-        for(var j=0; j<bullets.length; j++) {
-            var pos2 = bullets[j].pos;
-            var size2 = bullets[j].sprite.size;
+        for (var i = 0; i < asteroids.length; i++) {
+            var pos = asteroids[i].pos;
+            var size = asteroids[i].sprite.size;
 
-            if(boxCollides(pos, size, pos2, size2)) {
-                
-                // Remove the bullet
-                bullets.splice(j, 1);
-                j--;
-                break;
+            for (var j = 0; j < bullets.length; j++) {
+                var pos2 = bullets[j].pos;
+                var size2 = bullets[j].sprite.size;
+
+                if (boxCollides(pos, size, pos2, size2)) {
+
+                    // Remove the bullet
+                    bullets.splice(j, 1);
+                    j--;
+                    break;
+                }
+            }
+            if (boxCollides(pos, size, player.pos, player.sprite.size)) {
+                gameOver();
             }
         }
-        if(boxCollides(pos, size, player.pos, player.sprite.size)) {
-            gameOver();
-        }
-    }
-    
-    // Run collision detection for all asteroids and enemies
-    
-    for(var i=0; i<asteroids.length; i++) {
-        var pos = asteroids[i].pos;
-        var size = asteroids[i].sprite.size;
 
-        for(var j=0; j<enemies.length; j++) {
-            var pos = enemies[j].pos;
-            var size = enemies[j].sprite.size;
+        // Run collision detection for all asteroids and enemies
 
-            if(boxCollides(pos, size, pos2, size2)) {
-                
-                // Remove the asteroid
-                asteroids.splice(i, 1);
-                i--;
-                break;
+        for (var i = 0; i < asteroids.length; i++) {
+            var pos = asteroids[i].pos;
+            var size = asteroids[i].sprite.size;
+
+            for (var j = 0; j < enemies.length; j++) {
+                var pos = enemies[j].pos;
+                var size = enemies[j].sprite.size;
+
+                if (boxCollides(pos, size, pos2, size2)) {
+
+                    // Remove the asteroid
+                    asteroids.splice(i, 1);
+                    i--;
+                    break;
+                }
             }
         }
-    }
-    
-    // Run collision detection for all enemies and enemies
-    
-    for(var i=0; i<enemies.length; i++) {
-        var pos = enemies[i].pos;
-        var size = enemies[i].sprite.size;
 
-        for(var j=0; j<enemies.length; j++) {
-            var pos = enemies[j].pos;
-            var size = enemies[j].sprite.size;
+        // Run collision detection for all enemies and enemies
 
-            if(boxCollides(pos, size, pos2, size2)) {
-                
-                // Remove the asteroid
-                enemies.splice(j, 1);
-                j--;
-                break;
+        for (var i = 0; i < enemies.length; i++) {
+            var pos = enemies[i].pos;
+            var size = enemies[i].sprite.size;
+
+            for (var j = 0; j < enemies.length; j++) {
+                var pos = enemies[j].pos;
+                var size = enemies[j].sprite.size;
+
+                if (boxCollides(pos, size, pos2, size2)) {
+
+                    // Remove the asteroid
+                    enemies.splice(j, 1);
+                    j--;
+                    break;
+                }
             }
         }
-    }
     }
 }
 
 function checkPlayerBounds() {
     // Check bounds
-    if(player.pos[0] < 0) {
+    if (player.pos[0] < 0) {
         player.pos[0] = 0;
-    }
-    else if(player.pos[0] > canvas.width - player.sprite.size[0]) {
+    } else if (player.pos[0] > canvas.width - player.sprite.size[0]) {
         player.pos[0] = canvas.width - player.sprite.size[0];
     }
 
-    if(player.pos[1] < 0) {
+    if (player.pos[1] < 0) {
         player.pos[1] = 0;
-    }
-    else if(player.pos[1] > canvas.height - player.sprite.size[1]) {
+    } else if (player.pos[1] > canvas.height - player.sprite.size[1]) {
         player.pos[1] = canvas.height - player.sprite.size[1];
     }
 }
@@ -421,7 +426,7 @@ function render() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Render the player if the game isn't over
-    if(!isGameOver) {
+    if (!isGameOver) {
         renderEntity(player);
     }
 
@@ -432,9 +437,9 @@ function render() {
 };
 
 function renderEntities(list) {
-    for(var i=0; i<list.length; i++) {
+    for (var i = 0; i < list.length; i++) {
         renderEntity(list[i]);
-    }    
+    }
 }
 
 function renderEntity(entity) {
@@ -461,14 +466,19 @@ function gameOver() {
 
 //Pause
 
-function pause(){
-    console.log(inPause);
-    if(!inPause){
+window.addEventListener("keyup", function (event) {
+    if (event.keyCode == 80) {
+        pause();
+    }
+});
+
+function pause() {
+    if (!inPause) {
         inPause = true;
         document.getElementById('pause').style.display = 'block';
         return;
     }
-    if(inPause) {
+    if (inPause) {
         inPause = false;
         document.getElementById('pause').style.display = 'none';
     }
@@ -485,10 +495,10 @@ function reset() {
     enemies = [];
     bullets = [];
     asteroids = [];
-    
+
     lifes = 3;
     inPause = false;
-    
+
     stopPlaySound(gameOverSound);
 
     player.pos = [190, 500];

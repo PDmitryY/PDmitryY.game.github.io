@@ -7,7 +7,7 @@ html, body {
 canvas {
     display: block;
     margin: auto;
-
+    background: url('../img/startBackground.jpg');
     position: absolute;
     top: 0;
     bottom: 0;
@@ -75,7 +75,7 @@ canvas {
     color: #aaffdd;
 }
 
-#game-over, #game-over-overlay, #pause {
+#start, #game-over, #game-over-overlay, #pause {
     margin: auto;
     width: 800px;
     height: 580px;
@@ -86,6 +86,10 @@ canvas {
     bottom: 0;
     z-index: 1;
     display: none;
+}
+
+#start{
+    display: block;
 }
 
 #game-over-overlay {
@@ -104,6 +108,15 @@ canvas {
     font-family: sans-serif;
 }
 
-#game-over button {
+#game-over button, start-button {
     font-size: 1.5em;
+}
+
+#start-button {
+    position: absolute;
+    bottom: 20px;
+    right: 180px;
+    background-color: blue;
+    opacity: .5;
+    color: white;
 }
