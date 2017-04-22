@@ -70,16 +70,19 @@ function init() {
     document.getElementById('play-again').addEventListener('click', function () {
         reset();
         backgroundSound = playSound('sounds/backgroundSound.mp3');
+        backgroundSound.loop = true;
     });
 
     reset();
     lastTime = Date.now();
     main();
     backgroundSound = playSound('sounds/backgroundSound.mp3');
+    backgroundSound.loop = true;
 }
 
 let startButton = document.getElementById('start-button');
 startButton.addEventListener("click", function(){
+    playSound('sounds/ready.flac'); 
     document.getElementById('start').style.display = 'none';
     resources.load([
     'img/sprites___.png',
@@ -450,6 +453,7 @@ function renderEntity(entity) {
 }
 // Game over
 function gameOver() {
+    playSound('sounds/scream.flac'); 
     lifes -= 1;
     enemies = [];
     bullets = [];
@@ -461,6 +465,7 @@ function gameOver() {
         isGameOver = true;
         stopPlaySound(backgroundSound);
         gameOverSound = playSound('sounds/gameOverSound.mp3');
+        gameOverSound.loop = true;
     }
 }
 
@@ -473,12 +478,12 @@ window.addEventListener("keyup", function (event) {
 });
 
 function pause() {
-    if (!inPause) {
+    if (!inPause && !isGameOver) {
         inPause = true;
         document.getElementById('pause').style.display = 'block';
         return;
     }
-    if (inPause) {
+    if (inPause && !isGameOver) {
         inPause = false;
         document.getElementById('pause').style.display = 'none';
     }
